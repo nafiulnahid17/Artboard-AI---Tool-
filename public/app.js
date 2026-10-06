@@ -354,7 +354,18 @@ async function exportFiles() {
     async job => {
       state.lastExportResult = job.result || null;
       state.stage = "export";
-      toast("Production files generated.");
+      const failures = Object.values(job.result?.export_errors || {});
+      if (failures.length) {
+        const formats = [...new Set(failures.map(item => item.format).filter(Boolean))];
+        toast(
+          formats.length
+            ? `Production files generated; failed: ${formats.join(", ").toUpperCase()}.`
+            : "Production files generated with export warnings.",
+          "warning",
+        );
+      } else {
+        toast("Production files generated.");
+      }
     },
   );
 }
@@ -706,6 +717,7 @@ function inspector() {
   const project = state.project;
   const artboard = project?.artboard || {};
   const geometry = project?.geometry || {};
+  const artworkAi = project?.artwork_analysis;
   const ai = project?.ai_reconstruction;
   const grade = fidelity(project);
   return `<aside class="card inspector stack">
@@ -725,6 +737,12 @@ function inspector() {
       <div class="inspector-row"><span>Version</span><strong>${escapeHtml(state.engine?.version || "Not reported")}</strong></div>
       <div class="inspector-row"><span>Default artboard</span><strong>${escapeHtml(state.engine?.default_artboard || "Not reported")}</strong></div>
     </div>
+    ${artworkAi ? `<div class="divider"></div><div class="inspector-block">
+      <span class="eyebrow">Full Artwork AI</span>
+      <div class="inspector-row"><span>Status</span><strong>Analyzed</strong></div>
+      <div class="inspector-row"><span>Model</span><strong>${escapeHtml(artworkAi.provider?.model || "Not reported")}</strong></div>
+      <div class="inspector-row"><span>Visible parts</span><strong>${escapeHtml(String(artworkAi.result?.visible_parts?.length ?? "Not reported"))}</strong></div>
+    </div>` : ""}
     ${geometry.method ? `<div class="divider"></div><div class="inspector-block">
       <span class="eyebrow">Geometry</span>
       <div class="inspector-row"><span>Method</span><strong>${escapeHtml(humanState(geometry.method))}</strong></div>
