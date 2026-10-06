@@ -4,6 +4,9 @@
   "main": "worker/index.js",
   "compatibility_date": "2026-10-01",
   "keep_vars": true,
+  "vars": {
+    "ENGINE_ORIGIN": "https://artboard-ai-resolution-independent-production.up.railway.app"
+  },
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
