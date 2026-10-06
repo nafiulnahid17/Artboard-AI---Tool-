@@ -1,0 +1,15 @@
+{
+  "name": "artboard-ai-tool",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Artboard AI production workspace for resolution-independent jersey artwork.",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "check": "node --check worker/index.js && node --check public/app.js"
+  },
+  "devDependencies": {
+    "wrangler": "^4.45.0"
+  }
+}
