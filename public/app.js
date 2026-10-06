@@ -27,8 +27,8 @@ const state = {
 
 const steps = [
   ["upload", "Upload", "Source artwork"],
-  ["prepare", "Prepare", "Surface + geometry"],
-  ["production", "Reconstruct", "AI + vector core"],
+  ["prepare", "Analyze", "Full artwork + Front Body"],
+  ["production", "Reconstruct", "AI artwork + vector core"],
   ["validation", "Validate", "Fidelity + integrity"],
   ["export", "Export", "Production files"],
 ];
@@ -311,7 +311,7 @@ async function prepareArtboard() {
 
   await startJob("/api/artboard/prepare", body, async () => {
     state.stage = "production";
-    toast("Front Body surface prepared at the 22 × 31 production aspect.");
+    toast("Full artwork analyzed; Front Body prepared at the 22 × 31 production aspect.");
   });
 }
 
@@ -437,10 +437,13 @@ function stepper() {
 }
 
 function leftSidebar() {
+  const artworkAi = state.project?.artwork_analysis;
   const actualAi = state.project?.ai_reconstruction;
-  const aiModel = actualAi?.provider?.model || "Engine-managed model";
+  const artworkModel = artworkAi?.provider?.model || "Engine-managed vision";
+  const artworkState = artworkAi ? statusBadge("Analyzed", "success") : statusBadge("Not run");
+  const aiModel = actualAi?.provider?.model || "Engine-managed image model";
   const aiState = actualAi
-    ? actualAi.accepted ? statusBadge("Accepted", "success") : actualAi.attempted ? statusBadge("Rejected / Fallback", "warning") : statusBadge("Not used")
+    ? actualAi.accepted ? statusBadge("Accepted", "success") : actualAi.attempted ? statusBadge("Fallback", "warning") : statusBadge("Not used")
     : statusBadge("Not run");
 
   return `<aside class="card sidebar stack">
@@ -463,7 +466,11 @@ function leftSidebar() {
       </label>
     </div>
     <div class="engine-model">
-      <div class="row between"><strong>AI route</strong>${aiState}</div>
+      <div class="row between"><strong>Full Artwork Analysis</strong>${artworkState}</div>
+      <small class="muted">${escapeHtml(artworkModel)}</small>
+    </div>
+    <div class="engine-model">
+      <div class="row between"><strong>AI Flat Artwork</strong>${aiState}</div>
       <small class="muted">${escapeHtml(aiModel)}</small>
     </div>
     <div class="divider"></div>
@@ -530,11 +537,11 @@ function prepareStage() {
   const geometry = state.project?.geometry || {};
   return `<div class="stack">
     <div class="row between wrap">
-      <div><span class="eyebrow">Surface Preparation</span><h2>Detect and flatten Front Body</h2></div>
+      <div><span class="eyebrow">Surface Preparation</span><h2>Analyze full artwork & extract Front Body</h2></div>
       ${geometry.method ? statusBadge(humanState(geometry.method), "purple") : ""}
     </div>
     <div class="mode-tabs">
-      <button data-action="corner-mode" data-mode="auto" class="${state.cornerMode === "auto" ? "selected" : ""}" type="button">Auto Detect</button>
+      <button data-action="corner-mode" data-mode="auto" class="${state.cornerMode === "auto" ? "selected" : ""}" type="button">Auto Analyze</button>
       <button data-action="corner-mode" data-mode="manual" class="${state.cornerMode === "manual" ? "selected" : ""}" type="button" ${state.previewUrl ? "" : "disabled"}>Manual 4 Corners</button>
     </div>
     <div class="image-stage">
@@ -544,7 +551,7 @@ function prepareStage() {
       </div>` : `<div class="upload-inner"><div class="upload-icon">◎</div><h2>Source is stored in the engine</h2><p class="muted">This browser session no longer has the local image preview. Auto Detect remains available. Re-upload as a new artboard if you need manual corner selection.</p></div>`}
     </div>
     ${state.cornerMode === "auto"
-      ? `<p class="small muted">The engine will use AI surface analysis when configured and confidence-gated, then deterministic geometry rectification to the exact 22:31 physical artboard ratio.</p>`
+      ? `<p class="small muted">The engine first analyzes the complete uploaded artwork, identifies the Front Body, then uses confidence-gated AI guidance plus deterministic geometry to create the exact 22:31 production artboard.</p>`
       : `<p class="small muted">Click the four visible Front Body corners. Corner order does not need to be exact; the geometry engine validates and orders the quadrilateral.</p>`}
     <div class="action-bar">
       <div class="row">
