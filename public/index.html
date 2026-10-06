@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0e1728">
+  <meta name="description" content="Artboard AI production workspace for resolution-independent jersey artwork.">
+  <title>Artboard AI — Production Workspace</title>
+  <link rel="icon" href="/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div id="app">
+    <div class="boot-shell">
+      <img src="/logo.svg" alt="" width="42" height="42">
+      <div>
+        <strong>Artboard AI</strong>
+        <span>Connecting to production engine…</span>
+      </div>
+    </div>
+  </div>
+
+  <input id="file-input" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+
+  <dialog id="details-dialog">
+    <header>
+      <div>
+        <span class="eyebrow">Production Report</span>
+        <h2 id="dialog-title">Details</h2>
+      </div>
+      <button id="dialog-close" class="icon-button" type="button" aria-label="Close">×</button>
+    </header>
+    <div id="dialog-body" class="dialog-body"></div>
+  </dialog>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <noscript>JavaScript is required to use the Artboard AI production workspace.</noscript>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
