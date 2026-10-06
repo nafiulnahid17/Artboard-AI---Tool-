@@ -1,0 +1,31 @@
+name: Artboard Tool Verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run check
+      - name: Verify final UI contract
+        run: |
+          test -f public/index.html
+          test -f public/styles.css
+          test -f public/app.js
+          test -f worker/index.js
+          grep -q "/api/artboard/production" public/app.js
+          grep -q "ai_reconstruction" public/app.js
+          grep -q "22 × 31" public/app.js
+          grep -q "ENGINE_API_KEY" worker/index.js
