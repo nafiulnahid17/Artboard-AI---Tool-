@@ -19,6 +19,8 @@ jobs:
           node-version: 22
       - run: npm install
       - run: npm run check
+      - name: Validate Cloudflare deployment bundle
+        run: npx wrangler deploy --dry-run --outdir .wrangler-dry-run
       - name: Verify final UI contract
         run: |
           test -f public/index.html
