@@ -70,7 +70,6 @@ async function proxyEngine(request, env) {
   };
   if (!["GET", "HEAD"].includes(request.method)) {
     init.body = request.body;
-    init.duplex = "half";
   }
 
   let upstream;
